@@ -1,5 +1,4 @@
 /*----------------------------------------------------------------------------*/
-
 /******************************************************************************
  ** Created by @author Omer Schwartz
 
@@ -33,38 +32,85 @@ typedef struct{
 }Tree;
 /*------------------------- Function Declaration -----------------------------*/
 /*-------------------------- Private  Function -------------------------------*/
-
+/**
+ *
+ * @param tree
+ */
 void    getUserValues(Tree* tree);
+
+/**
+ *
+ * @param value
+ * @return
+ */
 Node*   createNewNode(const int value);
+
+/**
+ *
+ * @param node
+ * @param toAdd
+ */
 void    nodeAdd(Node* node, Node* const toAdd);
+
+/**
+ *
+ * @param node
+ */
 void    nodeDelete(Node* node);
+//DEBUG
 void    debugTreePrint(const Node* node);
 /*--------------------------- Public  Function -------------------------------*/
-
+/**
+ *
+ * @return
+ */
 Tree*   treeCreate();
+
+/**
+ *
+ * @param tree
+ * @param value
+ */
 void    treeAdd(Tree* tree, const int value);
+
+/**
+ *
+ * @param root
+ */
 void    printTreeLeaves(const Node* root);
+
+/**
+ *
+ * @param tree
+ */
 void    printMinimumTreeValue(const Tree *const tree);
+
+/**
+ *
+ * @param tree
+ */
 void    treeDelete(Tree* tree);
 
 /*----------------------------------------------------------------------------*/
 /*------------------------- Function Implementation --------------------------*/
 /*----------------------------- Main Section ---------------------------------*/
-
+/**
+ *
+ * @return
+ */
 int main() {
     Tree *t = treeCreate();
     getUserValues(t);
     printMinimumTreeValue(t);
     printTreeLeaves(t->_root);
-    //debugTreePrint(t->_root);
     treeDelete(t);
     return 0;
 }
-
+/*----------------------------------------------------------------------------*/
 Tree*   treeCreate(){
     return new(std::nothrow) Tree;
 }
-
+/*----------------------------------------------------------------------------*/
 void    treeDelete(Tree* tree){
 
     if (tree != NULL && tree->_root != NULL){
@@ -72,7 +118,7 @@ void    treeDelete(Tree* tree){
     }
     delete(tree);
 }
-
+/*----------------------------------------------------------------------------*/
 void    nodeDelete(Node* node){
 
     if (node->_left == NULL && node->_right == NULL){
@@ -88,7 +134,7 @@ void    nodeDelete(Node* node){
         delete(node);
     }
 }
-
+/*----------------------------------------------------------------------------*/
 void    getUserValues(Tree* tree){
 
     int userInput = 0;
@@ -98,7 +144,7 @@ void    getUserValues(Tree* tree){
         cin >> userInput;
     }
 }
-
+/*----------------------------------------------------------------------------*/
 void    treeAdd(Tree* tree, const int value){
 
     Node* newNode = createNewNode(value);
@@ -111,8 +157,7 @@ void    treeAdd(Tree* tree, const int value){
         nodeAdd(currentNode, newNode);
     }
 }
-
-
+/*----------------------------------------------------------------------------*/
 void    nodeAdd(Node* node, Node* const toAdd){
     if (node->_data < toAdd->_data){
         if (node->_right == NULL){
@@ -133,13 +178,13 @@ void    nodeAdd(Node* node, Node* const toAdd){
         }
     }
 }
-
+/*----------------------------------------------------------------------------*/
 Node*   createNewNode(const int value){
     Node* newNode = new(std::nothrow) Node;
     newNode->_data = value;
     return newNode;
 }
-
+/*----------------------------------------------------------------------------*/
 void    debugTreePrint(const Node* node){
 
     if (node->_left != NULL){
@@ -152,7 +197,7 @@ void    debugTreePrint(const Node* node){
         debugTreePrint(node->_right);
     }
 }
-
+/*----------------------------------------------------------------------------*/
 void    printTreeLeaves(const Node* const root){
 
 
@@ -166,7 +211,7 @@ void    printTreeLeaves(const Node* const root){
         printTreeLeaves(root->_right);
     }
 }
-
+/*----------------------------------------------------------------------------*/
 void    printMinimumTreeValue(const Tree *const tree){
 
     Node* node = tree->_root;
@@ -179,5 +224,5 @@ void    printMinimumTreeValue(const Tree *const tree){
         }
         cout << node->_data << endl;
     }
-
 }
+/*----------------------------------------------------------------------------*/
