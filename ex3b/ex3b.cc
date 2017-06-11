@@ -35,7 +35,7 @@ struct Node {
     Tree* _rootTree;
     int _data ;
     bool _visited;
-    struct Node *_left, *_right, *_parent ;
+    struct Node *_left, *_right;
 };
 
 typedef struct{
@@ -61,10 +61,9 @@ void    debugTreePrint(const Node* node);
 Tree*   treeCreate();
 void    treeAdd(Tree* tree, const int value);
 void    printTreeLeaves(const Node* root);
-void    printMinimumTreeValue(const Tree *const tree);
+
 void    treeDelete(Tree* tree);
 Node*   min_depth_leaf(const Node *root) ;
-Node*   minDepthLeaf(Node * current, int depth, int& call);
 bool    isLeaf(const Node* node);
 
 Queue * createQueue(int size);
@@ -83,7 +82,6 @@ bool isEmpty(Queue* queue);
 int main() {
     Tree *t = treeCreate();
     getUserValues(t);
-    //debugTreePrint(t->_root);
     if (t->_treeSize != 0) {
         Node *node = min_depth_leaf(t->_root);
         if (node != NULL) {
@@ -153,7 +151,7 @@ void    nodeAdd(Node* node, Node* const toAdd){
         if (node->_right == NULL){
             //Insert new node to right subtree
             node->_right = toAdd;
-            toAdd->_parent = node;
+
         }
         else{
             nodeAdd(node->_right, toAdd);
@@ -163,7 +161,7 @@ void    nodeAdd(Node* node, Node* const toAdd){
         if (node->_left == NULL) {
             //Insert new node to the left subtree
             node->_left = toAdd;
-            toAdd->_parent = node;
+
         }
         else {
             nodeAdd(node->_left, toAdd);
@@ -179,102 +177,6 @@ Node*   createNewNode(Tree* tree, const int value){
     return newNode;
 }
 /*----------------------------------------------------------------------------*/
-void    debugTreePrint(const Node* node){
-
-    if (node->_left != NULL){
-        debugTreePrint(node->_left);
-    }
-
-    cout << node->_data << " ";
-
-    if (node->_right != NULL){
-        debugTreePrint(node->_right);
-    }
-}
-/*----------------------------------------------------------------------------*/
-void    printTreeLeaves(const Node* const root){
-
-
-    if (root->_left != NULL){
-        printTreeLeaves(root->_left);
-    }
-    if (root->_left == NULL && root->_right == NULL) {
-        cout << root->_data << " ";
-    }
-    if (root->_right != NULL){
-        printTreeLeaves(root->_right);
-    }
-}
-/*----------------------------------------------------------------------------*/
-//Node*   min_depth_leaf(const Node *root) {
-//
-//    Node *ans = NULL;
-//    int depth = 1, call_num = 0;
-//
-//    if (root == NULL){
-//        cout << 0;
-//        return NULL;
-//    }
-//    if (isLeaf(root)){
-//        cout << root->_data;
-//        return NULL;
-//    }
-//    if (isLeaf(root->_left)){
-//        return root->_left;
-//    }
-//    if (isLeaf(root->_right)){
-//        return root->_right;
-//    }
-//
-//    //ans = minDepthLeaf(root->_left->_parent, depth, ++call_num);
-//
-//        while (ans == NULL) {
-//        ans = minDepthLeaf(root->_left, depth, call_num);
-//        if (ans != NULL){
-//            break;
-//        }
-//        else{
-//            ans = minDepthLeaf(root->_right, depth, call_num);
-//            if (ans == NULL){
-//                ++depth;
-//            }
-//        }
-//    }
-//    cout << "DEBUG: num of calls: " << call_num << endl;
-//    return ans;
-//
-//
-//}
-
-//Node * minDepthLeaf(Node * current, int depth, int& calls){
-//
-//    Node* ans;
-//    if (depth == 0 && !current->_visited){
-//        current->_visited = true;
-//        if (isLeaf(current)){
-//            return current;
-//        }
-//        else{
-//            return NULL;
-//        }
-//    }
-//    else{
-//        if ((ans = minDepthLeaf(current->_left, depth-1, ++calls)) != NULL){
-//            return ans;
-//        }
-//        else if ((ans = minDepthLeaf(current->_right, depth-1,++calls))!= NULL){
-//            return ans;
-//        }
-//        else{
-//            if (current->_parent != NULL){
-//                current = current->_parent;
-//            }
-//            return minDepthLeaf(current, depth+1, ++calls);
-//
-//        }
-//    }
-//}
-
 Node*   min_depth_leaf(const Node *root){
     Queue* queue = createQueue(root->_rootTree->_treeSize);
     Node* node = root->_rootTree->_root;
@@ -294,7 +196,6 @@ Node*   min_depth_leaf(const Node *root){
             enqueue(queue, node->_right);
         }
     }
-    //Not gonna happen:
     deleteQueue(queue);
     return node;
 }
