@@ -227,81 +227,82 @@ Node*   min_depth_leaf(const Node *root) {
         return root->_right;
     }
 
-    ans = minDepthLeaf(root->_left->_parent, depth, ++call_num);
+    //ans = minDepthLeaf(root->_left->_parent, depth, ++call_num);
 
-    //cout << "DEBUG: num of calls: " << call_num << endl;
+        while (ans == NULL) {
+        ans = minDepthLeaf(root->_left, depth, call_num);
+        if (ans != NULL){
+            break;
+        }
+        else{
+            ans = minDepthLeaf(root->_right, depth, call_num);
+            if (ans == NULL){
+                ++depth;
+            }
+        }
+    }
+    cout << "DEBUG: num of calls: " << call_num << endl;
     return ans;
 
-    //    while (ans == NULL) {
-//        ans = minDepthLeaf(root->_left, depth, calls);
-//        if (ans != NULL){
-//            break;
+
+}
+
+//Node * minDepthLeaf(Node * current, int depth, int& calls){
+//
+//    Node* ans;
+//    if (depth == 0 && !current->_visited){
+//        current->_visited = true;
+//        if (isLeaf(current)){
+//            return current;
 //        }
 //        else{
-//            ans = minDepthLeaf(root->_right, depth, calls);
-//            if (ans == NULL){
-//                ++depth;
+//            return NULL;
+//        }
+//    }
+//    else{
+//        if ((ans = minDepthLeaf(current->_left, depth-1, ++calls)) != NULL){
+//            return ans;
+//        }
+//        else if ((ans = minDepthLeaf(current->_right, depth-1,++calls))!= NULL){
+//            return ans;
+//        }
+//        else{
+//            if (current->_parent != NULL){
+//                current = current->_parent;
 //            }
+//            return minDepthLeaf(current, depth+1, ++calls);
+//
 //        }
 //    }
-}
-
-Node * minDepthLeaf(Node * current, int depth, int& calls){
-
-    Node* ans;
-    if (depth == 0 && !current->_visited){
-        current->_visited = true;
-        if (isLeaf(current)){
-            return current;
-        }
-        else{
-            return NULL;
-        }
-    }
-    else{
-        if ((ans = minDepthLeaf(current->_left, depth-1, ++calls)) != NULL){
-            return ans;
-        }
-        else if ((ans = minDepthLeaf(current->_right, depth-1,++calls))!= NULL){
-            return ans;
-        }
-        else{
-            if (current->_parent != NULL){
-                current = current->_parent;
-            }
-            return minDepthLeaf(current, depth+1, ++calls);
-
-        }
-    }
-}
-
-//Node * minDepthLeaf(Node * start, int depths, int& calls){
-//
-//    Node* current = start;
-//    int depth = 1;
-//    if (start == NULL){
-//        return NULL;
-//    }
-//    if (isLeaf(current)) return current;
-//
-//    if (isLeaf(current->_left)){
-//        return current->_left;
-//    }
-//    current = current->_left;
-//
-//    while (!isLeaf(current)){
-//        if (current->_parent->_right != NULL){
-//            ++calls;
-//            current = current->_parent->_right;
-//        }
-//        else{
-//            ++calls;
-//            ++depth;
-//            current = current->_parent->_left->_left;
-//        }
-//    }
-//    return current;
 //}
+
+Node * minDepthLeaf(Node * start, int depths, int& calls){
+
+    Node* current = start;
+    int depth = 1;
+    if (start == NULL){
+        return NULL;
+    }
+    if (isLeaf(current)) return current;
+
+    if (isLeaf(current->_left)){
+        return current->_left;
+    }
+    current = current->_left;
+
+    while (!isLeaf(current)){
+        if (current->_parent->_right != NULL){
+            ++calls;
+            current = current->_parent->_right;
+        }
+        else{
+            ++calls;
+            ++depth;
+            current = current->_parent->_left->_left;
+        }
+    }
+    return current;
+}
 
 bool isLeaf(const Node* node){
     return (node != NULL && node->_left == NULL && node->_right == NULL);
