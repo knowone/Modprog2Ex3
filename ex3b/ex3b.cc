@@ -24,7 +24,7 @@ using std::endl;
 typedef struct{
 
 
-    int _treeSize = 0;
+    int _treeSize;
     struct Node* _root;
 
 }Tree;
@@ -34,7 +34,7 @@ struct Node {
 
     Tree* _rootTree;
     int _data ;
-    bool _visited = false;
+    bool _visited;
     struct Node *_left, *_right, *_parent ;
 };
 
@@ -83,17 +83,21 @@ bool isEmpty(Queue* queue);
 int main() {
     Tree *t = treeCreate();
     getUserValues(t);
-    debugTreePrint(t->_root);
-    Node * node = min_depth_leaf(t->_root);
-    if (node != NULL) {
-        cout << node->_data;
+    //debugTreePrint(t->_root);
+    if (t->_treeSize != 0) {
+        Node *node = min_depth_leaf(t->_root);
+        if (node != NULL) {
+            cout << node->_data;
+        }
     }
     treeDelete(t);
     return 0;
 }
 /*----------------------------------------------------------------------------*/
 Tree*   treeCreate(){
-    return new(std::nothrow) Tree;
+    Tree * t = new(std::nothrow) Tree;
+    t->_treeSize = 0;
+    return t;
 }
 /*----------------------------------------------------------------------------*/
 void    treeDelete(Tree* tree){
@@ -171,6 +175,7 @@ Node*   createNewNode(Tree* tree, const int value){
     Node* newNode = new(std::nothrow) Node;
     newNode->_data = value;
     newNode->_rootTree = tree;
+    newNode->_visited = false;
     return newNode;
 }
 /*----------------------------------------------------------------------------*/
