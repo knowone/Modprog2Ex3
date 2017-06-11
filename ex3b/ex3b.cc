@@ -22,75 +22,49 @@ using std::endl;
 /*--------------------------- Type Definition --------------------------------*/
 struct Node {
     int _data ;
-    struct Node *_left, *_right ;
+    bool _visited = false;
+    struct Node *_left, *_right, *_parent ;
 };
 
 typedef struct{
 
+    int _treeSize = 0;
     struct Node* _root;
 
 }Tree;
 
+typedef struct{
+
+    Node* _nodes[];
+    int _head_index;
+    int _tail_index;
+} Queue;
+
 /*------------------------- Function Declaration -----------------------------*/
 /*-------------------------- Private  Function -------------------------------*/
-/**
- *
- * @param tree
- */
+
 void    getUserValues(Tree* tree);
-
-/**
- *
- * @param value
- * @return
- */
 Node*   createNewNode(const int value);
-
-/**
- *
- * @param node
- * @param toAdd
- */
 void    nodeAdd(Node* node, Node* const toAdd);
-
-/**
- *
- * @param node
- */
 void    nodeDelete(Node* node);
+
 //DEBUG
 void    debugTreePrint(const Node* node);
 /*--------------------------- Public  Function -------------------------------*/
-/**
- *
- * @return
- */
+
 Tree*   treeCreate();
-
-/**
- *
- * @param tree
- * @param value
- */
 void    treeAdd(Tree* tree, const int value);
-
-/**
- *
- * @param root
- */
 void    printTreeLeaves(const Node* root);
-
-/**
- *
- * @param tree
- */
 void    printMinimumTreeValue(const Tree *const tree);
-
-/**
- *
- * @param tree
- */
 void    treeDelete(Tree* tree);
+Node*   min_depth_leaf(const Node *root) ;
+Node*   minDepthLeaf(Node * current, int depth, int& call);
+bool    isLeaf(const Node* node);
+
+Queue * createQueue(int size);
+void enqueue(Queue* queue, Node* node);
+Node* dequeue(Queue* queue);
+bool isEmpty(Queue* queue);
 
 /*----------------------------------------------------------------------------*/
 /*------------------------- Function Implementation --------------------------*/
@@ -102,8 +76,11 @@ void    treeDelete(Tree* tree);
 int main() {
     Tree *t = treeCreate();
     getUserValues(t);
-    printMinimumTreeValue(t);
-    printTreeLeaves(t->_root);
+    debugTreePrint(t->_root);
+    Node * node = min_depth_leaf(t->_root);
+    if (node != NULL) {
+        cout << node->_data;
+    }
     treeDelete(t);
     return 0;
 }
@@ -140,7 +117,7 @@ void    getUserValues(Tree* tree){
 
     int userInput = 0;
     cin >> userInput;
-    while (userInput != 0){
+    while (!cin.eof() && userInput != 0){
         treeAdd(tree, userInput);
         cin >> userInput;
     }
@@ -157,7 +134,7 @@ void    treeAdd(Tree* tree, const int value){
         currentNode = tree->_root;
         nodeAdd(currentNode, newNode);
     }
-
+    ++tree->_treeSize;
 }
 /*----------------------------------------------------------------------------*/
 void    nodeAdd(Node* node, Node* const toAdd){
@@ -165,6 +142,7 @@ void    nodeAdd(Node* node, Node* const toAdd){
         if (node->_right == NULL){
             //Insert new node to right subtree
             node->_right = toAdd;
+            toAdd->_parent = node;
         }
         else{
             nodeAdd(node->_right, toAdd);
@@ -174,6 +152,7 @@ void    nodeAdd(Node* node, Node* const toAdd){
         if (node->_left == NULL) {
             //Insert new node to the left subtree
             node->_left = toAdd;
+            toAdd->_parent = node;
         }
         else {
             nodeAdd(node->_left, toAdd);
@@ -228,3 +207,127 @@ void    printMinimumTreeValue(const Tree *const tree){
     }
 }
 /*----------------------------------------------------------------------------*/
+Node*   min_depth_leaf(const Node *root) {
+
+    Node *ans = NULL;
+    int depth = 2, call_num = 0;
+
+    if (root == NULL){
+        cout << 0;
+        return NULL;
+    }
+    if (isLeaf(root)){
+        cout << root->_data;
+        return NULL;
+    }
+    if (isLeaf(root->_left)){
+        return root->_left;
+    }
+    if (isLeaf(root->_right)){
+        return root->_right;
+    }
+
+    ans = minDepthLeaf(root->_left->_parent, depth, ++call_num);
+
+    //cout << "DEBUG: num of calls: " << call_num << endl;
+    return ans;
+
+    //    while (ans == NULL) {
+//        ans = minDepthLeaf(root->_left, depth, calls);
+//        if (ans != NULL){
+//            break;
+//        }
+//        else{
+//            ans = minDepthLeaf(root->_right, depth, calls);
+//            if (ans == NULL){
+//                ++depth;
+//            }
+//        }
+//    }
+}
+
+Node * minDepthLeaf(Node * current, int depth, int& calls){
+
+    Node* ans;
+    if (depth == 0 && !current->_visited){
+        current->_visited = true;
+        if (isLeaf(current)){
+            return current;
+        }
+        else{
+            return NULL;
+        }
+    }
+    else{
+        if ((ans = minDepthLeaf(current->_left, depth-1, ++calls)) != NULL){
+            return ans;
+        }
+        else if ((ans = minDepthLeaf(current->_right, depth-1,++calls))!= NULL){
+            return ans;
+        }
+        else{
+            if (current->_parent != NULL){
+                current = current->_parent;
+            }
+            return minDepthLeaf(current, depth+1, ++calls);
+
+        }
+    }
+}
+
+//Node * minDepthLeaf(Node * start, int depths, int& calls){
+//
+//    Node* current = start;
+//    int depth = 1;
+//    if (start == NULL){
+//        return NULL;
+//    }
+//    if (isLeaf(current)) return current;
+//
+//    if (isLeaf(current->_left)){
+//        return current->_left;
+//    }
+//    current = current->_left;
+//
+//    while (!isLeaf(current)){
+//        if (current->_parent->_right != NULL){
+//            ++calls;
+//            current = current->_parent->_right;
+//        }
+//        else{
+//            ++calls;
+//            ++depth;
+//            current = current->_parent->_left->_left;
+//        }
+//    }
+//    return current;
+//}
+
+bool isLeaf(const Node* node){
+    return (node != NULL && node->_left == NULL && node->_right == NULL);
+}
+
+Queue * createQueue(int size){
+
+    Queue* queue = new (std::nothrow) Queue;
+    queue->_nodes = new(std::nothrow) Node*[size];
+    queue->_head_index = 0;
+    queue->_tail_index = -1;
+    return queue;
+}
+
+void enqueue(Queue* queue, Node* node){
+
+    queue->_nodes[queue->_tail_index++] = node;
+}
+
+Node* dequeue(Queue* queue){
+
+    if (!isEmpty(queue)){
+        return queue->_nodes[queue->_head_index++];
+    } else return NULL;
+}
+
+bool isEmpty(Queue* queue){
+    return queue->_tail_index < queue->_head_index;
+}
