@@ -19,58 +19,83 @@ using std::cin;
 using std::cout;
 using std::cerr;
 using std::endl;
-
 /*--------------------------- Type Definition --------------------------------*/
+struct Tree_node {
+    int _data ;
+    struct Tree_node *_left, *_right ;
+};
+
+struct List_node {
+    int _data ;
+    struct List_node * _next;
+} ;
+
 typedef struct{
 
-
-    int _treeSize;
-    struct Node* _root;
+    struct Tree_node* _root;
 
 }Tree;
 
-
-struct Node {
-
-    Tree* _rootTree;
-    int _data ;
-    bool _visited;
-    struct Node *_left, *_right;
-};
-
-typedef struct{
-
-    Node** _nodes;
-    int _head_index;
-    int _tail_index;
-} Queue;
-
-
 /*------------------------- Function Declaration -----------------------------*/
 /*-------------------------- Private  Function -------------------------------*/
-
+/**
+ *
+ * @param tree
+ */
 void    getUserValues(Tree* tree);
-Node*   createNewNode(Tree* tree, const int value);
-void    nodeAdd(Node* node, Node* const toAdd);
-void    nodeDelete(Node* node);
 
+/**
+ *
+ * @param value
+ * @return
+ */
+Tree_node*   createNewNode(const int value);
+
+/**
+ *
+ * @param node
+ * @param toAdd
+ */
+void    nodeAdd(Tree_node* node, Tree_node* const toAdd);
+
+/**
+ *
+ * @param node
+ */
+void    nodeDelete(Tree_node* node);
 //DEBUG
-void    debugTreePrint(const Node* node);
+void    debugTreePrint(const Tree_node* node);
 /*--------------------------- Public  Function -------------------------------*/
-
+/**
+ *
+ * @return
+ */
 Tree*   treeCreate();
+
+/**
+ *
+ * @param tree
+ * @param value
+ */
 void    treeAdd(Tree* tree, const int value);
-void    printTreeLeaves(const Node* root);
 
+/**
+ *
+ * @param root
+ */
+void    printTreeLeaves(const Tree_node* root);
+
+/**
+ *
+ * @param tree
+ */
+void    printMinimumTreeValue(const Tree *const tree);
+
+/**
+ *
+ * @param tree
+ */
 void    treeDelete(Tree* tree);
-const Node* min_depth_leaf(const Node *root) ;
-bool    isLeaf(const Node* node);
-
-Queue * createQueue(int size);
-void deleteQueue(Queue* q);
-void enqueue(Queue* queue, Node* node);
-Node* dequeue(Queue* queue);
-bool isEmpty(Queue* queue);
 
 /*----------------------------------------------------------------------------*/
 /*------------------------- Function Implementation --------------------------*/
@@ -82,22 +107,13 @@ bool isEmpty(Queue* queue);
 int main() {
     Tree *t = treeCreate();
     getUserValues(t);
-    const Node *node;
-    if (t->_treeSize != 0) {
-        node = min_depth_leaf(t->_root);
-        if (node != NULL) {
-            cout << node->_data;
-        }
-    }
+
     treeDelete(t);
     return 0;
 }
 /*----------------------------------------------------------------------------*/
 Tree*   treeCreate(){
-    Tree * t = new(std::nothrow) Tree;
-    //TODO: alloc check
-    t->_treeSize = 0;
-    return t;
+    return new(std::nothrow) Tree;
 }
 /*----------------------------------------------------------------------------*/
 void    treeDelete(Tree* tree){
@@ -108,7 +124,7 @@ void    treeDelete(Tree* tree){
     delete(tree);
 }
 /*----------------------------------------------------------------------------*/
-void    nodeDelete(Node* node){
+void    nodeDelete(Tree_node* node){
 
     if (node->_left == NULL && node->_right == NULL){
         delete(node);
@@ -128,10 +144,7 @@ void    getUserValues(Tree* tree){
 
     int userInput = 0;
     cin >> userInput;
-    while (!cin.eof()
-           //DEBUG:
-            // && userInput != 0
-            ){
+    while (!cin.eof() && userInput != 0){
         treeAdd(tree, userInput);
         cin >> userInput;
     }
@@ -139,8 +152,8 @@ void    getUserValues(Tree* tree){
 /*----------------------------------------------------------------------------*/
 void    treeAdd(Tree* tree, const int value){
 
-    Node* newNode = createNewNode(tree, value);
-    Node* currentNode;
+    Tree_node* newNode = createNewNode(value);
+    Tree_node* currentNode;
     if (tree->_root == NULL){
         tree->_root = newNode;
     }
@@ -148,15 +161,14 @@ void    treeAdd(Tree* tree, const int value){
         currentNode = tree->_root;
         nodeAdd(currentNode, newNode);
     }
-    ++tree->_treeSize;
+
 }
 /*----------------------------------------------------------------------------*/
-void    nodeAdd(Node* node, Node* const toAdd){
+void    nodeAdd(Tree_node* node, Tree_node* const toAdd){
     if (node->_data < toAdd->_data){
         if (node->_right == NULL){
             //Insert new node to right subtree
             node->_right = toAdd;
-
         }
         else{
             nodeAdd(node->_right, toAdd);
@@ -166,7 +178,6 @@ void    nodeAdd(Node* node, Node* const toAdd){
         if (node->_left == NULL) {
             //Insert new node to the left subtree
             node->_left = toAdd;
-
         }
         else {
             nodeAdd(node->_left, toAdd);
@@ -174,80 +185,22 @@ void    nodeAdd(Node* node, Node* const toAdd){
     }
 }
 /*----------------------------------------------------------------------------*/
-Node*   createNewNode(Tree* tree, const int value){
-    Node* newNode = new(std::nothrow) Node;
-    //TODO: alloc check
+Tree_node*   createNewNode(const int value){
+    Tree_node* newNode = new(std::nothrow) Tree_node;
     newNode->_data = value;
-    newNode->_rootTree = tree;
-    newNode->_visited = false;
     return newNode;
 }
 /*----------------------------------------------------------------------------*/
-const Node* min_depth_leaf(const Node *root){
+void    debugTreePrint(const Tree_node* node){
 
-    Queue* queue = createQueue(root->_rootTree->_treeSize);
-    Queue* secondary = createQueue(root->_rootTree->_treeSize);
-    Node* node = root->_rootTree->_root;
-    enqueue(queue, node);
-    enqueue(secondary, node);
-    node->_visited = true;
-    while(!isEmpty(queue)){
-        node = dequeue(queue);
-        if (isLeaf(node)){
-            break;
-        }
-        if(node->_left != NULL && !node->_left->_visited){
-            node->_left->_visited = true;
-            enqueue(queue, node->_left);
-            enqueue(secondary, node->_left);
-        }
-        if(node->_right != NULL && !node->_right->_visited){
-            node->_right->_visited = true;
-            enqueue(queue, node->_right);
-            enqueue(secondary, node->_right);
-        }
+    if (node->_left != NULL){
+        debugTreePrint(node->_left);
     }
-    while (!isEmpty(secondary)) {
-        dequeue(secondary)->_visited = false;
+
+    cout << node->_data << " ";
+
+    if (node->_right != NULL){
+        debugTreePrint(node->_right);
     }
-    deleteQueue(secondary);
-    deleteQueue(queue);
-    return node;
-}
-/*----------------------------------------------------------------------------*/
-bool isLeaf(const Node* node){
-    return (node != NULL && node->_left == NULL && node->_right == NULL);
-}
-/*----------------------------------------------------------------------------*/
-Queue * createQueue(int size){
-
-    Queue* queue = new (std::nothrow) Queue;
-    //TODO: alloc check
-    queue->_nodes = new(std::nothrow) Node* [size];
-    //TODO: alloc check
-    queue->_head_index = 0;
-    queue->_tail_index = -1;
-    return queue;
-}
-/*----------------------------------------------------------------------------*/
-void deleteQueue(Queue* q){
-    delete[](q->_nodes);
-    delete(q);
-}
-/*----------------------------------------------------------------------------*/
-void enqueue(Queue* queue, Node* node){
-
-    queue->_nodes[++queue->_tail_index] = node;
-}
-/*----------------------------------------------------------------------------*/
-Node* dequeue(Queue* queue){
-
-    if (!isEmpty(queue)){
-        return queue->_nodes[queue->_head_index++];
-    } else return NULL;
-}
-/*----------------------------------------------------------------------------*/
-bool isEmpty(Queue* queue){
-    return queue->_tail_index < queue->_head_index;
 }
 /*----------------------------------------------------------------------------*/
