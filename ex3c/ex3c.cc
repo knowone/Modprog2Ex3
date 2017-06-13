@@ -127,6 +127,7 @@ int main() {
 /*----------------------------------------------------------------------------*/
 Tree*   treeCreate(){
     return new(std::nothrow) Tree;
+    //TODO: check memory
 }
 /*----------------------------------------------------------------------------*/
 void    treeDelete(Tree* tree){
@@ -190,6 +191,7 @@ void    nodeAdd(Tree_node* node, Tree_node* const toAdd){
 /*----------------------------------------------------------------------------*/
 Tree_node*   createNewNode(const int value){
     Tree_node* newNode = new(std::nothrow) Tree_node;
+    //TODO: memory check
     newNode->_data = value;
     return newNode;
 }
@@ -226,6 +228,7 @@ void    createSortedList(List_node *& list,
 List_node*    addListNode(List_node*& list, const int value){
 
     List_node* list_node = new(std::nothrow) List_node;
+    //TODO: check memory
     if (list == NULL){
         list =  list_node;
         list->_data = value;
