@@ -63,8 +63,6 @@ void    nodeAdd(Tree_node* node, Tree_node* const toAdd);
  * @param node
  */
 void    nodeDelete(Tree_node* node);
-//DEBUG
-void    debugTreePrint(const Tree_node* node);
 /*--------------------------- Public  Function -------------------------------*/
 /**
  *
@@ -75,28 +73,37 @@ Tree*   treeCreate();
 /**
  *
  * @param tree
+ */
+void    treeDelete(Tree* tree);
+
+/**
+ *
+ * @param tree
  * @param value
  */
 void    treeAdd(Tree* tree, const int value);
 
-/**
- *
- * @param root
- */
-void    printTreeLeaves(const Tree_node* root);
+List_node*    addListNode(List_node*& list, const int value);
 
 /**
  *
- * @param tree
+ * @param list
+ * @param current
+ * @param node
  */
-void    printMinimumTreeValue(const Tree *const tree);
+void    createSortedList(List_node *& list,
+                         List_node *& current, const Tree_node* node);
+/**
+ *
+ * @param node
+ */
+void    printSortedList(const List_node* node);
 
 /**
  *
- * @param tree
+ * @param list
  */
-void    treeDelete(Tree* tree);
-
+void    sortedListDelete(List_node *list);
 /*----------------------------------------------------------------------------*/
 /*------------------------- Function Implementation --------------------------*/
 /*----------------------------- Main Section ---------------------------------*/
@@ -105,10 +112,16 @@ void    treeDelete(Tree* tree);
  * @return
  */
 int main() {
+
+    List_node* ln = NULL, *ln_current = NULL;
     Tree *t = treeCreate();
+
     getUserValues(t);
+    createSortedList(ln, ln_current, t->_root);
+    printSortedList(ln);
 
     treeDelete(t);
+    sortedListDelete(ln);
     return 0;
 }
 /*----------------------------------------------------------------------------*/
@@ -137,16 +150,6 @@ void    nodeDelete(Tree_node* node){
             nodeDelete(node->_right);
         }
         delete(node);
-    }
-}
-/*----------------------------------------------------------------------------*/
-void    getUserValues(Tree* tree){
-
-    int userInput = 0;
-    cin >> userInput;
-    while (!cin.eof() && userInput != 0){
-        treeAdd(tree, userInput);
-        cin >> userInput;
     }
 }
 /*----------------------------------------------------------------------------*/
@@ -191,16 +194,72 @@ Tree_node*   createNewNode(const int value){
     return newNode;
 }
 /*----------------------------------------------------------------------------*/
-void    debugTreePrint(const Tree_node* node){
+void    getUserValues(Tree* tree){
+
+    int userInput = 0;
+    cin >> userInput;
+    while (!cin.eof() && userInput != 0){
+        treeAdd(tree, userInput);
+        cin >> userInput;
+    }
+}
+/*----------------------------------------------------------------------------*/
+void    createSortedList(List_node *& list,
+                      List_node *& current, const Tree_node* node){
+
 
     if (node->_left != NULL){
-        debugTreePrint(node->_left);
+        createSortedList(list, current, node->_left);
     }
 
-    cout << node->_data << " ";
-
+    if (list == NULL) {
+        current = addListNode(list, node->_data);
+    }
+    else{
+        current = addListNode(current, node->_data);
+    }
     if (node->_right != NULL){
-        debugTreePrint(node->_right);
+        createSortedList(list, current, node->_right);
     }
+}
+/*----------------------------------------------------------------------------*/
+List_node*    addListNode(List_node*& list, const int value){
+
+    List_node* list_node = new(std::nothrow) List_node;
+    if (list == NULL){
+        list =  list_node;
+        list->_data = value;
+        return list;
+    }
+    else {
+        list_node->_data = value;
+        list->_next = list_node;
+        return list->_next;
+    }
+}
+/*----------------------------------------------------------------------------*/
+void    sortedListDelete(List_node *list){
+
+    List_node* node = list, *next_node;
+    while (node != NULL){
+        next_node = node->_next;
+        delete(node);
+        node = next_node;
+    }
+    delete(list);
+}
+/*----------------------------------------------------------------------------*/
+void    printSortedList(const List_node* node){
+    const List_node* list_node = node;
+    if (node != NULL){
+        cout << node->_data;
+        list_node = list_node->_next;
+    }
+    while (list_node != NULL){
+
+        cout << " " << list_node->_data;
+        list_node = list_node->_next;
+    }
+    cout << endl;
 }
 /*----------------------------------------------------------------------------*/
