@@ -6,13 +6,19 @@
 
         ## See ID and login on README file attached! ##
 
-   This Program
+   This Program creates a BST from user values taken from cin, and finds the
+   minimum depth leaf in that tree using a BFS algorithm.
+   This algorithm allows for the program to end sooner than checking for each
+   branch's depth since on the average case, we will only go through
+
+   O(2^k) <= O(2^h) = O(n) nodes [where k = min_depth_leaf].
+   Worst case: O(n)=O(2^h) [where h = height of tree].
 
  ******************************************************************************/
 /*--------------------------- Include Section --------------------------------*/
 #include <iostream>
 #ifndef EXIT_FAILURE
-#include <cstdlib>
+#include <cstdlib>  //For exit status
 #endif
 /*--------------------------- Using Section ----------------------------------*/
 using std::cin;
@@ -38,7 +44,7 @@ struct Node {
 
 typedef struct{
 
-    Node** _nodes;
+    Node** _nodes;      //array of Node pointers
     int _head_index;
     int _tail_index;
 } Queue;
@@ -138,7 +144,8 @@ void    enqueue(Queue* queue, Node* node);
 /**
  * Remove next Node in the @param queue.
  * @param queue to dequeue from
- * @return pointer to the next node in the queue.
+ * @return pointer to the next node in the queue. @returns NULL if queue is
+ * empty.
  */
 Node*   dequeue(Queue* queue);
 
@@ -182,23 +189,43 @@ int main() {
     return EXIT_SUCCESS;
 }
 /*----------------------------------------------------------------------------*/
-Tree*   treeCreate(){
-    Tree * t = new(std::nothrow) Tree;
+Node*   createNewNode(Tree* tree, const int value){
+    Node* newNode = new(std::nothrow) Node;
     //TODO: alloc check
-    t->_treeSize = 0;
-    return t;
+    newNode->_data = value;
+    newNode->_rootTree = tree;
+    newNode->_visited = false;      //Visited used in BFS
+    return newNode;
 }
 /*----------------------------------------------------------------------------*/
-void    treeDelete(Tree* tree){
+void    nodeAdd(Node* node, Node* const toAdd){
+    if (node->_data < toAdd->_data){
+        if (node->_right == NULL){
+            //Insert new node to right subtree
+            node->_right = toAdd;
 
-    if (tree != NULL && tree->_root != NULL){
-        nodeDelete(tree->_root);
+        }
+        else{
+            //Find the correct location for new node in right subtree
+            nodeAdd(node->_right, toAdd);
+        }
     }
-    delete(tree);
+    else {
+        if (node->_left == NULL) {
+            //Insert new node to the left subtree
+            node->_left = toAdd;
+
+        }
+        else {
+            //Find the correct location for new node in left subtree
+            nodeAdd(node->_left, toAdd);
+        }
+    }
 }
 /*----------------------------------------------------------------------------*/
 void    nodeDelete(Node* node){
 
+    //Delete nodes recursively using post-order traversal
     if (node->_left == NULL && node->_right == NULL){
         delete(node);
     }
@@ -213,79 +240,85 @@ void    nodeDelete(Node* node){
     }
 }
 /*----------------------------------------------------------------------------*/
+Tree*   treeCreate(){
+    Tree * t = new(std::nothrow) Tree;
+    //TODO: alloc check
+    t->_treeSize = 0;
+    return t;
+}
+/*----------------------------------------------------------------------------*/
 void    getUserValues(Tree* tree){
 
     int userInput = 0;
     cin >> userInput;
     while (!cin.eof()){
 
+        //Add values to tree
         treeAdd(tree, userInput);
         cin >> userInput;
     }
+}
+/*----------------------------------------------------------------------------*/
+void    treeDelete(Tree* tree){
+
+    if (tree != NULL && tree->_root != NULL){
+        nodeDelete(tree->_root);
+    }
+    delete(tree);
 }
 /*----------------------------------------------------------------------------*/
 void    treeAdd(Tree* tree, const int value){
 
     Node* newNode = createNewNode(tree, value);
     Node* currentNode;
+
+    //If empty tree
     if (tree->_root == NULL){
         tree->_root = newNode;
     }
     else{
         currentNode = tree->_root;
+
+        //Find the correct location for newNode
         nodeAdd(currentNode, newNode);
     }
-    ++tree->_treeSize;
-}
-/*----------------------------------------------------------------------------*/
-void    nodeAdd(Node* node, Node* const toAdd){
-    if (node->_data < toAdd->_data){
-        if (node->_right == NULL){
-            //Insert new node to right subtree
-            node->_right = toAdd;
-
-        }
-        else{
-            nodeAdd(node->_right, toAdd);
-        }
-    }
-    else {
-        if (node->_left == NULL) {
-            //Insert new node to the left subtree
-            node->_left = toAdd;
-
-        }
-        else {
-            nodeAdd(node->_left, toAdd);
-        }
-    }
-}
-/*----------------------------------------------------------------------------*/
-Node*   createNewNode(Tree* tree, const int value){
-    Node* newNode = new(std::nothrow) Node;
-    //TODO: alloc check
-    newNode->_data = value;
-    newNode->_rootTree = tree;
-    newNode->_visited = false;
-    return newNode;
+    ++tree->_treeSize;      //Keep the size of tree
 }
 /*----------------------------------------------------------------------------*/
 const Node* min_depth_leaf(const Node *root){
 
+    //queue is used for the algorithm, secondary to revert changes to nodes
     Queue* queue = createQueue(root->_rootTree->_treeSize);
     Queue* secondary = createQueue(root->_rootTree->_treeSize);
-    Node* node = root->_rootTree->_root;
+
+    Node* node = root->_rootTree->_root;  //"Casting" a const Node to Node
+
+    //Start with root
     enqueue(queue, node);
     enqueue(secondary, node);
+
+    //Mark as visited so we do not enqueue it again, otherwise it will cause
+    //an infinite loop
     node->_visited = true;
+
     while(!isEmpty(queue)){
+
+        //Check if node is a leaf
         node = dequeue(queue);
         if (isLeaf(node)){
-            break;
+            break;  //stop if true
         }
+
+        /*
+            enqueue left and right children of node, making them next in line
+            to be checked. If we are deeper then an unchecked node that is higher
+            then in the queue they will appear only after that node.
+        */
         if(node->_left != NULL && !node->_left->_visited){
             node->_left->_visited = true;
             enqueue(queue, node->_left);
+
+            //enqueue to secondary to be reverted later.
             enqueue(secondary, node->_left);
         }
         if(node->_right != NULL && !node->_right->_visited){
@@ -294,18 +327,15 @@ const Node* min_depth_leaf(const Node *root){
             enqueue(secondary, node->_right);
         }
     }
+
+    //Perform afterwards - revert all visited from true to false.
     while (!isEmpty(secondary)) {
         dequeue(secondary)->_visited = false;
     }
-    deleteQueue(secondary);
+    deleteQueue(secondary); //Cleanup
     deleteQueue(queue);
-    return node;
+    return node;            //minimum depth leaf
 }
-/*----------------------------------------------------------------------------*/
-bool isLeaf(const Node* node){
-    return (node != NULL && node->_left == NULL && node->_right == NULL);
-}
-
 /*----------------------------------------------------------------------------*/
 Queue * createQueue(int size){
 
@@ -313,8 +343,8 @@ Queue * createQueue(int size){
     //TODO: alloc check
     queue->_nodes = new(std::nothrow) Node* [size];
     //TODO: alloc check
-    queue->_head_index = 0;
-    queue->_tail_index = -1;
+    queue->_head_index = 0;     //Simple array implementation of a queue with
+    queue->_tail_index = -1;    //head and tail indices
     return queue;
 }
 /*----------------------------------------------------------------------------*/
@@ -325,17 +355,29 @@ void deleteQueue(Queue* q){
 /*----------------------------------------------------------------------------*/
 void enqueue(Queue* queue, Node* node){
 
+    //Put node in the next available space.
+    //Assume queue is in the size of tree, so no overflow will occur
     queue->_nodes[++queue->_tail_index] = node;
 }
 /*----------------------------------------------------------------------------*/
 Node* dequeue(Queue* queue){
 
+    //if queue not empty, extract the next node in line
+    //Return NULL if queue is empty
     if (!isEmpty(queue)){
         return queue->_nodes[queue->_head_index++];
     } else return NULL;
 }
 /*----------------------------------------------------------------------------*/
 bool isEmpty(Queue* queue){
+
+    //Empty queue is determined if the next to dequeue index is higher than
+    //the enqueue index. Meaning check if we didn't extract more items than
+    //items put.
     return queue->_tail_index < queue->_head_index;
+}
+/*----------------------------------------------------------------------------*/
+bool isLeaf(const Node* node){
+    return (node != NULL && node->_left == NULL && node->_right == NULL);
 }
 /*----------------------------------------------------------------------------*/
