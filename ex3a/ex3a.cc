@@ -36,12 +36,6 @@ typedef struct{
 /*------------------------- Function Declaration -----------------------------*/
 /*-------------------------- Private  Function -------------------------------*/
 /**
- * Receives input from user and creates a BST with those values.
- * @param tree pointer to an allocated Tree struct
- */
-void    getUserValues(Tree* tree);
-
-/**
  * Create a new node with _data attribute of @param value
  * @param value non-zero integer
  * @return pointer to new Node struct
@@ -62,7 +56,14 @@ void    nodeAdd(Node* node, Node* const toAdd);
  * @param node to delete
  */
 void    nodeDelete(Node* node);
+
 /*--------------------------- Public  Function -------------------------------*/
+/**
+ * Receives input from user and creates a BST with those values.
+ * @param tree pointer to an allocated Tree struct
+ */
+void    getUserValues(Tree* tree);
+
 /**
  * Allocate an empty Tree struct.
  * Note: the Node struct within _root is uninitialized.
@@ -72,7 +73,7 @@ Tree*   treeCreate();
 
 /**
  * Delete tree struct and all its Node structs.
- * @param tree
+ * @param tree to delete
  */
 void    treeDelete(Tree* tree);
 

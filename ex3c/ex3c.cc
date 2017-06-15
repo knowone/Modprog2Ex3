@@ -39,47 +39,51 @@ typedef struct{
 /*------------------------- Function Declaration -----------------------------*/
 /*-------------------------- Private  Function -------------------------------*/
 /**
- *
- * @param tree
- */
-void    getUserValues(Tree* tree);
-
-/**
- *
- * @param value
- * @return
+ * Create a new node with _data attribute of @param value
+ * @param value any integer
+ * @return pointer to new Tree_node struct
  */
 Tree_node*   createNewNode(const int value);
 
 /**
- *
- * @param node
- * @param toAdd
+ * Add @param toAdd into the (sub)tree with root of @param node.
+ * Recursively try to find the new node's correct location as a left or right
+ * child of node.
+ * @param node the root of the (sub)tree that will contain the new toAdd node.
+ * @param toAdd the new node to add into the tree
  */
 void    nodeAdd(Tree_node* node, Tree_node* const toAdd);
 
 /**
- *
- * @param node
+ * Delete the Tree Node struct.
+ * @param node to delete
  */
 void    nodeDelete(Tree_node* node);
+
 /*--------------------------- Public  Function -------------------------------*/
 /**
- *
- * @return
+ * Receives input from user and creates a BST with those values.
+ * @param tree pointer to an allocated Tree struct
+ */
+void    getUserValues(Tree* tree);
+
+/**
+ * Allocate an empty Tree struct.
+ * Note: the Tree node struct within _root is uninitialized.
+ * @return pointer to newly allocated Tree struct
  */
 Tree*   treeCreate();
 
 /**
- *
- * @param tree
+ * Delete tree struct and all its Tree_node structs.
+ * @param tree to delete
  */
 void    treeDelete(Tree* tree);
 
 /**
- *
- * @param tree
- * @param value
+ * Add a value into the Tree.
+ * @param tree the Tree struct to add a value to.
+ * @param value any integer
  */
 void    treeAdd(Tree* tree, const int value);
 

@@ -52,8 +52,8 @@ typedef struct{
 /*-------------------------- Private  Function -------------------------------*/
 /**
  * Create a new node with _data attribute of @param value and tree as _root of
- * newNode
- * @param value non-zero integer
+ * newNode.
+ * @param value any integer
  * @param the Tree struct pointer representing the root of the tree
  * @return pointer to new Node struct
  */
@@ -90,14 +90,14 @@ Tree*   treeCreate();
 
 /**
  * Delete tree struct and all its Node structs.
- * @param tree
+ * @param tree to delete
  */
 void    treeDelete(Tree* tree);
 
 /**
  * Add a value into the Tree.
  * @param tree the Tree struct to add a value to.
- * @param value a non zero integer
+ * @param value any integer
  */
 void    treeAdd(Tree* tree, const int value);
 
@@ -190,8 +190,11 @@ int main() {
 }
 /*----------------------------------------------------------------------------*/
 Node*   createNewNode(Tree* tree, const int value){
-    Node* newNode = new(std::nothrow) Node;
-    //TODO: alloc check
+    Node* newNode;
+    if ((newNode = new(std::nothrow) Node) == NULL){
+        cerr << "Failed to allocate memory in createNewNode()";
+        exit(EXIT_FAILURE);
+    }
     newNode->_data = value;
     newNode->_rootTree = tree;
     newNode->_visited = false;      //Visited used in BFS
@@ -241,8 +244,11 @@ void    nodeDelete(Node* node){
 }
 /*----------------------------------------------------------------------------*/
 Tree*   treeCreate(){
-    Tree * t = new(std::nothrow) Tree;
-    //TODO: alloc check
+    Tree * t;
+    if ((t = new(std::nothrow) Tree) == NULL){
+        cerr << "Failed to allocate memory in treeCreate()";
+        exit(EXIT_FAILURE);
+    }
     t->_treeSize = 0;
     return t;
 }
@@ -339,10 +345,12 @@ const Node* min_depth_leaf(const Node *root){
 /*----------------------------------------------------------------------------*/
 Queue * createQueue(int size){
 
-    Queue* queue = new (std::nothrow) Queue;
-    //TODO: alloc check
-    queue->_nodes = new(std::nothrow) Node* [size];
-    //TODO: alloc check
+    Queue* queue;
+    if ((queue = new (std::nothrow) Queue) == NULL
+        || ((queue->_nodes = new(std::nothrow) Node* [size]) == NULL)){
+        cerr << "Failed to allocate memory in createQueue()";
+        exit(EXIT_FAILURE);
+    }
     queue->_head_index = 0;     //Simple array implementation of a queue with
     queue->_tail_index = -1;    //head and tail indices
     return queue;
