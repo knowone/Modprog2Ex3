@@ -109,7 +109,11 @@ int main() {
 }
 /*----------------------------------------------------------------------------*/
 Tree*   treeCreate(){
-    return new(std::nothrow) Tree;
+     Tree* t;
+    if ((t = new(std::nothrow) Tree) == NULL){
+        //TODO: add alloc checks
+    }
+    return t;
 }
 /*----------------------------------------------------------------------------*/
 void    treeDelete(Tree* tree){
@@ -182,7 +186,10 @@ void    nodeAdd(Node* node, Node* const toAdd){
 }
 /*----------------------------------------------------------------------------*/
 Node*   createNewNode(const int value){
-    Node* newNode = new(std::nothrow) Node;
+    Node* newNode;
+    if ((newNode = new(std::nothrow) Node) == NULL) {
+        //TODO: add alloc checks
+    }
     newNode->_data = value;
     return newNode;
 }
@@ -202,7 +209,9 @@ void    debugTreePrint(const Node* node){
 /*----------------------------------------------------------------------------*/
 void    printTreeLeaves(const Node* const root){
 
-
+    if (root == NULL){
+        return;
+    }
     if (root->_left != NULL){
         printTreeLeaves(root->_left);
     }

@@ -209,7 +209,9 @@ void    getUserValues(Tree* tree){
 void    createSortedList(List_node *& list,
                       List_node *& current, const Tree_node* node){
 
-
+    if (node == NULL){
+        return;
+    }
     if (node->_left != NULL){
         createSortedList(list, current, node->_left);
     }
@@ -253,14 +255,12 @@ void    sortedListDelete(List_node *list){
 }
 /*----------------------------------------------------------------------------*/
 void    printSortedList(const List_node* node){
+
     const List_node* list_node = node;
-    if (node != NULL){
-        cout << node->_data;
-        list_node = list_node->_next;
-    }
+
     while (list_node != NULL){
 
-        cout << " " << list_node->_data;
+        cout << list_node->_data << " ";
         list_node = list_node->_next;
     }
     cout << endl;
