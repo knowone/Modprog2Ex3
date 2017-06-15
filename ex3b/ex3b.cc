@@ -11,8 +11,10 @@
    This algorithm allows for the program to end sooner than checking for each
    branch's depth since on the average case, we will only go through
 
-   O(2^k) <= O(2^h) = O(n) nodes [where k = min_depth_leaf].
-   Worst case: O(n)=O(2^h) [where h = height of tree].
+ O(2^k) <= O(2^h) = O(|V|) nodes [where k = min_depth_leaf, V is the Vertices].
+   Worst case: O(V)=O(2^h) [where h = height of tree].
+   Creating the BST takes us O(n*log(n))=O(h*2^h)
+   So overall time is O(h*2^h + 2^k) = O(n*log(n))
 
  ******************************************************************************/
 /*--------------------------- Include Section --------------------------------*/
