@@ -71,6 +71,12 @@ void    nodeDelete(Node* node);
 Tree*   treeCreate();
 
 /**
+ * Delete tree struct and all its Node structs.
+ * @param tree
+ */
+void    treeDelete(Tree* tree);
+
+/**
  * Add a value into the Tree.
  * @param tree the Tree struct to add a value to.
  * @param value a non zero integer
@@ -88,12 +94,6 @@ void    printTreeLeaves(const Node* root);
  * @param tree to find it's minimum value
  */
 void    printMinimumTreeValue(const Tree *const tree);
-
-/**
- * Delete tree struct and all its Node structs.
- * @param tree
- */
-void    treeDelete(Tree* tree);
 
 /*----------------------------------------------------------------------------*/
 /*------------------------- Function Implementation --------------------------*/

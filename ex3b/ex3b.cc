@@ -23,10 +23,8 @@ using std::endl;
 /*--------------------------- Type Definition --------------------------------*/
 typedef struct{
 
-
     int _treeSize;
     struct Node* _root;
-
 }Tree;
 
 
@@ -44,33 +42,107 @@ typedef struct{
     int _head_index;
     int _tail_index;
 } Queue;
-
-
 /*------------------------- Function Declaration -----------------------------*/
 /*-------------------------- Private  Function -------------------------------*/
-
-void    getUserValues(Tree* tree);
+/**
+ * Create a new node with _data attribute of @param value and tree as _root of
+ * newNode
+ * @param value non-zero integer
+ * @param the Tree struct pointer representing the root of the tree
+ * @return pointer to new Node struct
+ */
 Node*   createNewNode(Tree* tree, const int value);
+
+/**
+ * Add @param toAdd into the (sub)tree with root of @param node.
+ * Recursively try to find the new node's correct location as a left or right
+ * child of node.
+ * @param node the root of the (sub)tree that will contain the new toAdd node.
+ * @param toAdd the new node to add into the tree
+ */
 void    nodeAdd(Node* node, Node* const toAdd);
+
+/**
+ * Delete the Node struct.
+ * @param node to delete
+ */
 void    nodeDelete(Node* node);
 
-//DEBUG
-void    debugTreePrint(const Node* node);
 /*--------------------------- Public  Function -------------------------------*/
+/**
+ * Receives input from user and creates a BST with those values.
+ * @param tree pointer to an allocated Tree struct
+ */
+void    getUserValues(Tree* tree);
 
+/**
+ * Allocate an empty Tree struct.
+ * Note: the Node struct within _root is uninitialized.
+ * @return pointer to newly allocated Tree struct
+ */
 Tree*   treeCreate();
-void    treeAdd(Tree* tree, const int value);
-void    printTreeLeaves(const Node* root);
 
+/**
+ * Delete tree struct and all its Node structs.
+ * @param tree
+ */
 void    treeDelete(Tree* tree);
-const Node* min_depth_leaf(const Node *root) ;
-bool    isLeaf(const Node* node);
 
+/**
+ * Add a value into the Tree.
+ * @param tree the Tree struct to add a value to.
+ * @param value a non zero integer
+ */
+void    treeAdd(Tree* tree, const int value);
+
+/**
+ *
+ * @param root
+ * @return
+ */
+const Node* min_depth_leaf(const Node *root) ;
+/*--------------------------- Queue   Function -------------------------------*/
+
+/**
+ *
+ * @param size
+ * @return
+ */
 Queue * createQueue(int size);
-void deleteQueue(Queue* q);
-void enqueue(Queue* queue, Node* node);
-Node* dequeue(Queue* queue);
-bool isEmpty(Queue* queue);
+
+/**
+ *
+ * @param q
+ */
+void    deleteQueue(Queue* q);
+
+/**
+ *
+ * @param queue
+ * @param node
+ */
+void    enqueue(Queue* queue, Node* node);
+
+/**
+ *
+ * @param queue
+ * @return
+ */
+Node*   dequeue(Queue* queue);
+
+/**
+ *
+ * @param queue
+ * @return
+ */
+bool    isEmpty(Queue* queue);
+
+/**
+ *
+ * @param node
+ * @return
+ */
+bool    isLeaf(const Node* node);
 
 /*----------------------------------------------------------------------------*/
 /*------------------------- Function Implementation --------------------------*/
@@ -128,10 +200,8 @@ void    getUserValues(Tree* tree){
 
     int userInput = 0;
     cin >> userInput;
-    while (!cin.eof()
-           //DEBUG:
-            // && userInput != 0
-            ){
+    while (!cin.eof()){
+
         treeAdd(tree, userInput);
         cin >> userInput;
     }
@@ -218,6 +288,7 @@ const Node* min_depth_leaf(const Node *root){
 bool isLeaf(const Node* node){
     return (node != NULL && node->_left == NULL && node->_right == NULL);
 }
+
 /*----------------------------------------------------------------------------*/
 Queue * createQueue(int size){
 
