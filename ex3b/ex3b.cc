@@ -33,7 +33,6 @@ typedef struct{
     struct Node* _root;
 }Tree;
 
-
 struct Node {
 
     Tree* _rootTree;
@@ -76,17 +75,17 @@ void    nodeDelete(Node* node);
 
 /*--------------------------- Public  Function -------------------------------*/
 /**
- * Receives input from user and creates a BST with those values.
- * @param tree pointer to an allocated Tree struct
- */
-void    getUserValues(Tree* tree);
-
-/**
  * Allocate an empty Tree struct.
  * Note: the Node struct within _root is uninitialized.
  * @return pointer to newly allocated Tree struct
  */
 Tree*   treeCreate();
+
+/**
+ * Receives input from user and creates a BST with those values.
+ * @param tree pointer to an allocated Tree struct
+ */
+void    getUserValues(Tree* tree);
 
 /**
  * Delete tree struct and all its Node structs.

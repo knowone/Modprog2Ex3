@@ -6,7 +6,17 @@
 
         ## See ID and login on README file attached! ##
 
-   This Program
+   This Program creates a BST from user values and then creates a sorted linked
+   list, taking advantage of the BST to efficiently get a sorted array.
+
+   Creating a BST is the sum of adding n nodes with a complexity of O(log(n))
+   for each node, since we go "downwards" on a tree when adding a node.
+   This is why finding a node in a BST also takes O(log(n)) time.
+   So adding n nodes takes O(n*log(n)). Afterwards, when creating a sorted list
+   we visit each node once we reach it, second when we return from left child
+   and third when we return from right child. Overall O(3*n)=O(n).
+   So overall, the program ran in O(n*log(n)+3n)=O(n*log(n)) -
+   such is the infimum of sorting algorithms.
 
  ******************************************************************************/
 /*--------------------------- Include Section --------------------------------*/
@@ -28,14 +38,13 @@ struct Tree_node {
 struct List_node {
     int _data ;
     struct List_node * _next;
-} ;
+};
 
 typedef struct{
 
     struct Tree_node* _root;
 
 }Tree;
-
 /*------------------------- Function Declaration -----------------------------*/
 /*-------------------------- Private  Function -------------------------------*/
 /**
@@ -62,17 +71,17 @@ void    nodeDelete(Tree_node* node);
 
 /*--------------------------- Public  Function -------------------------------*/
 /**
- * Receives input from user and creates a BST with those values.
- * @param tree pointer to an allocated Tree struct
- */
-void    getUserValues(Tree* tree);
-
-/**
  * Allocate an empty Tree struct.
  * Note: the Tree node struct within _root is uninitialized.
  * @return pointer to newly allocated Tree struct
  */
 Tree*   treeCreate();
+
+/**
+ * Receives input from user and creates a BST with those values.
+ * @param tree pointer to an allocated Tree struct
+ */
+void    getUserValues(Tree* tree);
 
 /**
  * Delete tree struct and all its Tree_node structs.
@@ -88,23 +97,16 @@ void    treeDelete(Tree* tree);
 void    treeAdd(Tree* tree, const int value);
 
 /**
- * Add an integer @param value to a List @param list
- * @param list where to insert value
- * @param value any integer
- * @return The List Node containing the new link (last link added to list)
- */
-List_node*   addListNode(List_node*& list, const int value);
-
-/**
  * Traverse the Tree in order and create a list with the values of the tree
  * arranged in a sorted ascending order.
- * @param list the begining of the list
+ * @param list the beginning of the list
  * @param current will be used to track the last added link in the list in the
  * recursion. Should start with a different pointer to the same List_node
  * @param node the root of the BST
  */
 void    createSortedList(List_node *& list,
                          List_node *& current, const Tree_node* node);
+
 /**
  * Print the List, containing a sorted linked list
  * @param node
@@ -116,6 +118,17 @@ void    printSortedList(const List_node* node);
  * @param list
  */
 void    sortedListDelete(List_node *list);
+
+/**
+ * Add an integer @param value to a List @param list as the next link.
+ * We assume that @param list is the last link in that list! Used incorrectly
+ * will overwrite existing lists.
+ * @param list where to insert value. List might be changed if is pointer to
+ * an empty list.
+ * @param value any integer
+ * @return The List Node containing the new link (last link added to list)
+ */
+List_node*   addListNode(List_node*& list, const int value);
 /*----------------------------------------------------------------------------*/
 /*------------------------- Function Implementation --------------------------*/
 /*----------------------------- Main Section ---------------------------------*/
@@ -127,21 +140,38 @@ void    sortedListDelete(List_node *list);
  */
 int main() {
 
-    List_node* ln = NULL, *ln_current = NULL;
-    Tree *t = treeCreate();
+    List_node* ln = NULL,           //ln will have the start of the list
+             * ln_current = NULL;   //ln_current will have the end of list
 
-    getUserValues(t);
+    Tree *t = treeCreate();         //Create an empty tree
+    getUserValues(t);               //Get user values into tree
+
+    //Create sorted list
     createSortedList(ln, ln_current, t->_root);
-    printSortedList(ln);
+    printSortedList(ln);            //Print it
 
-    treeDelete(t);
+    treeDelete(t);                  //Cleanup
     sortedListDelete(ln);
     return EXIT_SUCCESS;
 }
 /*----------------------------------------------------------------------------*/
 Tree*   treeCreate(){
-    return new(std::nothrow) Tree;
-    //TODO: check memory
+    Tree * t;
+    if ((t = new(std::nothrow) Tree) == NULL){
+        cerr << "Failed to allocate memory in treeCreate()";
+        exit(EXIT_FAILURE);
+    }
+    return t;
+}
+/*----------------------------------------------------------------------------*/
+void    getUserValues(Tree* tree){
+
+    int userInput = 0;
+    cin >> userInput;
+    while (!cin.eof()){
+        treeAdd(tree, userInput);
+        cin >> userInput;
+    }
 }
 /*----------------------------------------------------------------------------*/
 void    treeDelete(Tree* tree){
@@ -152,8 +182,109 @@ void    treeDelete(Tree* tree){
     delete(tree);
 }
 /*----------------------------------------------------------------------------*/
+void    treeAdd(Tree* tree, const int value){
+
+    Tree_node* newNode = createNewNode(value);
+    Tree_node* currentNode;
+
+    //Tree is empty, insert to root
+    if (tree->_root == NULL){
+        tree->_root = newNode;
+    }
+    else{
+        //Find newNode position in BST
+        currentNode = tree->_root;
+        nodeAdd(currentNode, newNode);
+    }
+
+}
+/*----------------------------------------------------------------------------*/
+void    createSortedList(List_node *& list,
+                      List_node *& current, const Tree_node* node){
+
+    if (node == NULL){
+        return;
+    }
+    //Go to left subtree first (in-order)
+    if (node->_left != NULL){
+        createSortedList(list, current, node->_left);
+    }
+    //Called once, when the list is started as an empty list.
+    if (list == NULL) {
+        current = addListNode(list, node->_data);
+    }
+        //Add a list node, to current link (end of the list) and replace the
+        //current end to new end
+    else{
+        current = addListNode(current, node->_data);
+    }
+
+    //continue to right child
+    if (node->_right != NULL){
+        createSortedList(list, current, node->_right);
+    }
+}
+/*----------------------------------------------------------------------------*/
+void    printSortedList(const List_node* node){
+
+    const List_node* list_node = node;
+
+    //Loop through the list
+    while (list_node != NULL){
+
+        cout << list_node->_data << " ";
+        list_node = list_node->_next;
+    }
+    cout << endl;
+}
+/*----------------------------------------------------------------------------*/
+void    sortedListDelete(List_node *list){
+
+    List_node* node = list, *next_node;
+    while (node != NULL){
+        next_node = node->_next;
+        delete(node);
+        node = next_node;
+    }
+    delete(list);
+}
+/*----------------------------------------------------------------------------*/
+Tree_node*   createNewNode(const int value){
+    Tree_node* newNode;
+    if ((newNode = new(std::nothrow) Tree_node) == NULL){
+        cerr << "Failed to allocate memory in createNewNode()";
+        exit(EXIT_FAILURE);
+    }
+    newNode->_data = value;
+    return newNode;
+}
+/*----------------------------------------------------------------------------*/
+void    nodeAdd(Tree_node* node, Tree_node* const toAdd){
+    if (node->_data < toAdd->_data){
+        if (node->_right == NULL){
+            //Insert new node to right subtree
+            node->_right = toAdd;
+        }
+        else{
+            //Find the correct location for new node in right subtree
+            nodeAdd(node->_right, toAdd);
+        }
+    }
+    else {
+        if (node->_left == NULL) {
+            //Insert new node to the left subtree
+            node->_left = toAdd;
+        }
+        else {
+            //Find the correct location for new node in left subtree
+            nodeAdd(node->_left, toAdd);
+        }
+    }
+}
+/*----------------------------------------------------------------------------*/
 void    nodeDelete(Tree_node* node){
 
+    //Delete nodes recursively using post-order traversal
     if (node->_left == NULL && node->_right == NULL){
         delete(node);
     }
@@ -168,115 +299,25 @@ void    nodeDelete(Tree_node* node){
     }
 }
 /*----------------------------------------------------------------------------*/
-void    treeAdd(Tree* tree, const int value){
-
-    Tree_node* newNode = createNewNode(value);
-    Tree_node* currentNode;
-    if (tree->_root == NULL){
-        tree->_root = newNode;
-    }
-    else{
-        currentNode = tree->_root;
-        nodeAdd(currentNode, newNode);
-    }
-
-}
-/*----------------------------------------------------------------------------*/
-void    nodeAdd(Tree_node* node, Tree_node* const toAdd){
-    if (node->_data < toAdd->_data){
-        if (node->_right == NULL){
-            //Insert new node to right subtree
-            node->_right = toAdd;
-        }
-        else{
-            nodeAdd(node->_right, toAdd);
-        }
-    }
-    else {
-        if (node->_left == NULL) {
-            //Insert new node to the left subtree
-            node->_left = toAdd;
-        }
-        else {
-            nodeAdd(node->_left, toAdd);
-        }
-    }
-}
-/*----------------------------------------------------------------------------*/
-Tree_node*   createNewNode(const int value){
-    Tree_node* newNode = new(std::nothrow) Tree_node;
-    //TODO: memory check
-    newNode->_data = value;
-    return newNode;
-}
-/*----------------------------------------------------------------------------*/
-void    getUserValues(Tree* tree){
-
-    int userInput = 0;
-    cin >> userInput;
-    while (!cin.eof() && userInput != 0){
-        treeAdd(tree, userInput);
-        cin >> userInput;
-    }
-}
-/*----------------------------------------------------------------------------*/
-void    createSortedList(List_node *& list,
-                      List_node *& current, const Tree_node* node){
-
-    if (node == NULL){
-        return;
-    }
-    if (node->_left != NULL){
-        createSortedList(list, current, node->_left);
-    }
-    //Called once, when the list is started as an empty list.
-    if (list == NULL) {
-        current = addListNode(list, node->_data);
-    }
-    else{
-        current = addListNode(current, node->_data);
-    }
-    if (node->_right != NULL){
-        createSortedList(list, current, node->_right);
-    }
-}
-/*----------------------------------------------------------------------------*/
 List_node*   addListNode(List_node*& list, const int value){
 
-    List_node* list_node = new(std::nothrow) List_node;
-    //TODO: check memory
+    List_node* list_node;
+    if((list_node = new(std::nothrow) List_node) == NULL){
+        cerr << "Failed to allocate memory in addListNode()";
+        exit(EXIT_FAILURE);
+    }
+
+    //if list is empty, update list to the new allocated list
     if (list == NULL){
         list =  list_node;
         list->_data = value;
         return list;
     }
+        //Put new list node as the next link in that list
     else {
         list_node->_data = value;
         list->_next = list_node;
         return list->_next;
     }
-}
-/*----------------------------------------------------------------------------*/
-void    sortedListDelete(List_node *list){
-
-    List_node* node = list, *next_node;
-    while (node != NULL){
-        next_node = node->_next;
-        delete(node);
-        node = next_node;
-    }
-    delete(list);
-}
-/*----------------------------------------------------------------------------*/
-void    printSortedList(const List_node* node){
-
-    const List_node* list_node = node;
-
-    while (list_node != NULL){
-
-        cout << list_node->_data << " ";
-        list_node = list_node->_next;
-    }
-    cout << endl;
 }
 /*----------------------------------------------------------------------------*/
