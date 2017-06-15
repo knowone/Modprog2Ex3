@@ -167,6 +167,8 @@ void    treeAdd(Tree* tree, const int value){
         tree->_root = newNode;
     }
     else{
+
+        //Tree is not empty, add newNode to tree:
         currentNode = tree->_root;
         nodeAdd(currentNode, newNode);
     }
@@ -180,6 +182,7 @@ void    nodeAdd(Node* node, Node* const toAdd){
             node->_right = toAdd;
         }
         else{
+            //Find the correct location for new node in right subtree
             nodeAdd(node->_right, toAdd);
         }
     }
@@ -189,6 +192,7 @@ void    nodeAdd(Node* node, Node* const toAdd){
             node->_left = toAdd;
         }
         else {
+            //Find the correct location for new node in left subtree
             nodeAdd(node->_left, toAdd);
         }
     }
@@ -203,24 +207,13 @@ Node*   createNewNode(const int value){
     return newNode;
 }
 /*----------------------------------------------------------------------------*/
-void    debugTreePrint(const Node* node){
-
-    if (node->_left != NULL){
-        debugTreePrint(node->_left);
-    }
-
-    cout << node->_data << " ";
-
-    if (node->_right != NULL){
-        debugTreePrint(node->_right);
-    }
-}
-/*----------------------------------------------------------------------------*/
 void    printTreeLeaves(const Node* const root){
 
     if (root == NULL){
         return;
     }
+
+    //Print tree with "in-order" scheme, resulting in sorted array
     if (root->_left != NULL){
         printTreeLeaves(root->_left);
     }
@@ -239,6 +232,8 @@ void    printMinimumTreeValue(const Tree *const tree){
         return;
     }
     else {
+
+        //Go to leftmost node
         while (node->_left != NULL) {
             node = node->_left;
         }
