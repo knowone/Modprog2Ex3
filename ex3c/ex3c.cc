@@ -122,7 +122,7 @@ int main() {
 
     treeDelete(t);
     sortedListDelete(ln);
-    return 0;
+    return EXIT_SUCCESS;
 }
 /*----------------------------------------------------------------------------*/
 Tree*   treeCreate(){

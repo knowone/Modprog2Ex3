@@ -6,13 +6,15 @@
 
         ## See ID and login on README file attached! ##
 
-   This Program
+   This Program takes a series of integers and creates a BST tree. Using the
+   tree created, prints the minimum value from all the user input, and prints
+   the tree's leaf nodes.
 
  ******************************************************************************/
 /*--------------------------- Include Section --------------------------------*/
 #include <iostream>
 #ifndef EXIT_FAILURE
-#include <cstdlib>
+#include <cstdlib>  //For exit status
 #endif
 /*--------------------------- Using Section ----------------------------------*/
 using std::cin;
@@ -25,8 +27,8 @@ struct Node {
     struct Node *_left, *_right ;
 };
 
+//Tree object contains the single Node root
 typedef struct{
-
     struct Node* _root;
 
 }Tree;
@@ -34,49 +36,50 @@ typedef struct{
 /*------------------------- Function Declaration -----------------------------*/
 /*-------------------------- Private  Function -------------------------------*/
 /**
- *
- * @param tree
+ * Receives input from user and creates a BST with those values.
+ * @param tree pointer to an allocated Tree struct
  */
 void    getUserValues(Tree* tree);
 
 /**
- *
- * @param value
- * @return
+ * Create a new node with _data attribute of @param value
+ * @param value non-zero integer
+ * @return pointer to new Node struct
  */
 Node*   createNewNode(const int value);
 
 /**
- *
- * @param node
- * @param toAdd
+ * Add @param toAdd into the (sub)tree with root of @param node.
+ * Recursively try to find the new node's correct location as a left or right
+ * child of node.
+ * @param node the root of the (sub)tree that will contain the new toAdd node.
+ * @param toAdd the new node to add into the tree
  */
 void    nodeAdd(Node* node, Node* const toAdd);
 
 /**
- *
- * @param node
+ * Delete the Node struct.
+ * @param node to delete
  */
 void    nodeDelete(Node* node);
-//DEBUG
-void    debugTreePrint(const Node* node);
 /*--------------------------- Public  Function -------------------------------*/
 /**
- *
- * @return
+ * Allocate an empty Tree struct.
+ * Note: the Node struct within _root is uninitialized.
+ * @return pointer to newly allocated Tree struct
  */
 Tree*   treeCreate();
 
 /**
- *
- * @param tree
- * @param value
+ * Add a value into the Tree.
+ * @param tree the Tree struct to add a value to.
+ * @param value a non zero integer
  */
 void    treeAdd(Tree* tree, const int value);
 
 /**
- *
- * @param root
+ * Print the Tree struct leaves.
+ * @param root the root Node of the (sub)tree
  */
 void    printTreeLeaves(const Node* root);
 
