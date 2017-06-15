@@ -96,51 +96,64 @@ void    treeDelete(Tree* tree);
 void    treeAdd(Tree* tree, const int value);
 
 /**
+ * Finds the the leaf with the minimum (least) depth in the BST.
+ * It uses a Breadth-First Search algorithm to traverse the tree "horizontally",
+ * meaning it goes through all the nodes in the same height from the root
+ * (starting from 1), going left to right, and if a leaf was not found, advances
+ * to traverse all nodes with height of 2 and so on..
+ * Using 2 Queues to undo changes to the state of node_visited in each node.
+ * Note: we override the const modifier by getting a pointer from the root node
+ * to it's Tree parent struct and back to the root without a const modifier.
+ * This casting is necessary for the algorithm to work. No modifications are
+ * done to any Node and any change is reverted.
  *
- * @param root
- * @return
+ * @param root the first Node of the tree.
+ * @return pointer to the Node that is in the minimum depth (first one from any
+ * other node, ordered by in-order).
  */
 const Node* min_depth_leaf(const Node *root) ;
 /*--------------------------- Queue   Function -------------------------------*/
 
 /**
- *
- * @param size
- * @return
+ * Creates an empty Queue struct in size of @param size
+ * @param size the size of the desired queue.
+ * Note: Queue Should be the size of the tree.
+ * @return empty Queue pointer.
  */
 Queue * createQueue(int size);
 
 /**
- *
- * @param q
+ * Deletes the Queue object
+ * @param q to delete
  */
 void    deleteQueue(Queue* q);
 
 /**
- *
- * @param queue
- * @param node
+ * Add @param node to Queue @param queue. (FIFO)
+ * @param queue where to enqueue
+ * @param node add node to end of the line
  */
 void    enqueue(Queue* queue, Node* node);
 
 /**
- *
- * @param queue
- * @return
+ * Remove next Node in the @param queue.
+ * @param queue to dequeue from
+ * @return pointer to the next node in the queue.
  */
 Node*   dequeue(Queue* queue);
 
 /**
- *
- * @param queue
- * @return
+ * Checks if the @param queue is empty.
+ * @param queue to check.
+ * @return true if queue has no items in it, false otherwise.
  */
 bool    isEmpty(Queue* queue);
 
 /**
- *
- * @param node
- * @return
+ * Helper Function. Simply checks if @param node is a leaf.
+ * @param node to check.
+ * @return true if node has no child nodes, meaning it is a leaf.
+ * False, otherwise.
  */
 bool    isLeaf(const Node* node);
 
@@ -148,13 +161,17 @@ bool    isLeaf(const Node* node);
 /*------------------------- Function Implementation --------------------------*/
 /*----------------------------- Main Section ---------------------------------*/
 /**
- *
- * @return
+ * Create am empty tree, and gets the user input and adds them to the tree,
+ * creating a BST.
+ * Then, finds the minimum node in the tree and prints it's value.
+ * Lastly, deleting the tree.
  */
 int main() {
     Tree *t = treeCreate();
     getUserValues(t);
     const Node *node;
+
+    //Not an empty tree:
     if (t->_treeSize != 0) {
         node = min_depth_leaf(t->_root);
         if (node != NULL) {
@@ -162,7 +179,7 @@ int main() {
         }
     }
     treeDelete(t);
-    return 0;
+    return EXIT_SUCCESS;
 }
 /*----------------------------------------------------------------------------*/
 Tree*   treeCreate(){
