@@ -104,6 +104,7 @@ int main() {
     getUserValues(t);
     printMinimumTreeValue(t);
     printTreeLeaves(t->_root);
+    cout << endl;
     treeDelete(t);
     return 0;
 }
@@ -227,7 +228,7 @@ void    printMinimumTreeValue(const Tree *const tree){
 
     Node* node = tree->_root;
     if (node == NULL){
-        cout << "0" << endl;
+        return;
     }
     else {
         while (node->_left != NULL) {
