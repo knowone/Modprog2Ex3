@@ -356,19 +356,19 @@ Queue * createQueue(int size){
     return queue;
 }
 /*----------------------------------------------------------------------------*/
-void deleteQueue(Queue* q){
+void    deleteQueue(Queue* q){
     delete[](q->_nodes);
     delete(q);
 }
 /*----------------------------------------------------------------------------*/
-void enqueue(Queue* queue, Node* node){
+void    enqueue(Queue* queue, Node* node){
 
     //Put node in the next available space.
     //Assume queue is in the size of tree, so no overflow will occur
     queue->_nodes[++queue->_tail_index] = node;
 }
 /*----------------------------------------------------------------------------*/
-Node* dequeue(Queue* queue){
+Node*   dequeue(Queue* queue){
 
     //if queue not empty, extract the next node in line
     //Return NULL if queue is empty
@@ -377,7 +377,7 @@ Node* dequeue(Queue* queue){
     } else return NULL;
 }
 /*----------------------------------------------------------------------------*/
-bool isEmpty(Queue* queue){
+bool    isEmpty(Queue* queue){
 
     //Empty queue is determined if the next to dequeue index is higher than
     //the enqueue index. Meaning check if we didn't extract more items than
@@ -385,7 +385,7 @@ bool isEmpty(Queue* queue){
     return queue->_tail_index < queue->_head_index;
 }
 /*----------------------------------------------------------------------------*/
-bool isLeaf(const Node* node){
+bool    isLeaf(const Node* node){
     return (node != NULL && node->_left == NULL && node->_right == NULL);
 }
 /*----------------------------------------------------------------------------*/

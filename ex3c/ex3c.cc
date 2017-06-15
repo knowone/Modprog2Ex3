@@ -87,24 +87,32 @@ void    treeDelete(Tree* tree);
  */
 void    treeAdd(Tree* tree, const int value);
 
-List_node*    addListNode(List_node*& list, const int value);
+/**
+ * Add an integer @param value to a List @param list
+ * @param list where to insert value
+ * @param value any integer
+ * @return The List Node containing the new link (last link added to list)
+ */
+List_node*   addListNode(List_node*& list, const int value);
 
 /**
- *
- * @param list
- * @param current
- * @param node
+ * Traverse the Tree in order and create a list with the values of the tree
+ * arranged in a sorted ascending order.
+ * @param list the begining of the list
+ * @param current will be used to track the last added link in the list in the
+ * recursion. Should start with a different pointer to the same List_node
+ * @param node the root of the BST
  */
 void    createSortedList(List_node *& list,
                          List_node *& current, const Tree_node* node);
 /**
- *
+ * Print the List, containing a sorted linked list
  * @param node
  */
 void    printSortedList(const List_node* node);
 
 /**
- *
+ * Delete the List object and all it's List nodes
  * @param list
  */
 void    sortedListDelete(List_node *list);
@@ -112,8 +120,10 @@ void    sortedListDelete(List_node *list);
 /*------------------------- Function Implementation --------------------------*/
 /*----------------------------- Main Section ---------------------------------*/
 /**
- *
- * @return
+ * Creates a BST with user values received from cin, and stops on EOF.
+ * Afterwards, it creates a sorted list from that tree, and prints the sorted
+ * list.
+ * Lastly, cleans up the tree and list.
  */
 int main() {
 
@@ -219,7 +229,7 @@ void    createSortedList(List_node *& list,
     if (node->_left != NULL){
         createSortedList(list, current, node->_left);
     }
-
+    //Called once, when the list is started as an empty list.
     if (list == NULL) {
         current = addListNode(list, node->_data);
     }
@@ -231,7 +241,7 @@ void    createSortedList(List_node *& list,
     }
 }
 /*----------------------------------------------------------------------------*/
-List_node*    addListNode(List_node*& list, const int value){
+List_node*   addListNode(List_node*& list, const int value){
 
     List_node* list_node = new(std::nothrow) List_node;
     //TODO: check memory
