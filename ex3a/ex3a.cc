@@ -99,8 +99,9 @@ void    treeDelete(Tree* tree);
 /*------------------------- Function Implementation --------------------------*/
 /*----------------------------- Main Section ---------------------------------*/
 /**
- *
- * @return
+ * Creates an empty tree, adds values to it from user, and prints the required
+ * output: the tree's minimum value and all the tree's leaves.
+ * @return EXIT_SUCCESS
  */
 int main() {
     Tree *t = treeCreate();         //Create an empty tree
