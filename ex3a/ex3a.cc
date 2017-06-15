@@ -79,18 +79,18 @@ void    treeAdd(Tree* tree, const int value);
 
 /**
  * Print the Tree struct leaves.
- * @param root the root Node of the (sub)tree
+ * @param root the root Node of the (sub)tree to print it's leaves.
  */
 void    printTreeLeaves(const Node* root);
 
 /**
- *
- * @param tree
+ * print the minimum value of the Tree (leftmost leaf)
+ * @param tree to find it's minimum value
  */
 void    printMinimumTreeValue(const Tree *const tree);
 
 /**
- *
+ * Delete tree struct and all its Node structs.
  * @param tree
  */
 void    treeDelete(Tree* tree);
@@ -103,13 +103,13 @@ void    treeDelete(Tree* tree);
  * @return
  */
 int main() {
-    Tree *t = treeCreate();
-    getUserValues(t);
-    printMinimumTreeValue(t);
-    printTreeLeaves(t->_root);
-    cout << endl;
-    treeDelete(t);
-    return 0;
+    Tree *t = treeCreate();         //Create an empty tree
+    getUserValues(t);               //Receive user input and insert into tree
+    printMinimumTreeValue(t);       //Print the Tree's minimum value
+    printTreeLeaves(t->_root);      //Print the Tree's leaves
+    cout << endl;                   //print a newline at end of output
+    treeDelete(t);                  //Cleanup
+    return EXIT_SUCCESS;
 }
 /*----------------------------------------------------------------------------*/
 Tree*   treeCreate(){
@@ -122,6 +122,7 @@ Tree*   treeCreate(){
 /*----------------------------------------------------------------------------*/
 void    treeDelete(Tree* tree){
 
+    //Delete all Nodes
     if (tree != NULL && tree->_root != NULL){
         nodeDelete(tree->_root);
     }
@@ -133,6 +134,7 @@ void    nodeDelete(Node* node){
     if (node->_left == NULL && node->_right == NULL){
         delete(node);
     }
+        //Delete all nodes "post-order"
     else{
         if (node->_left != NULL){
             nodeDelete(node->_left);
@@ -149,15 +151,18 @@ void    getUserValues(Tree* tree){
     int userInput = 0;
     cin >> userInput;
     while (userInput != 0){
+
+        //Add user value to tree:
         treeAdd(tree, userInput);
+
+        //Get next user value:
         cin >> userInput;
     }
 }
 /*----------------------------------------------------------------------------*/
 void    treeAdd(Tree* tree, const int value){
 
-    Node* newNode = createNewNode(value);
-    Node* currentNode;
+    Node* currentNode, * newNode = createNewNode(value);
     if (tree->_root == NULL){
         tree->_root = newNode;
     }
